@@ -29,6 +29,6 @@ CUDA_VISIBLE_DEVICES=7,6,5,4,3,2,1,0 python3 -m torch.distributed.launch --nproc
 ### Evaluate robustness a third-order-discretization CNN with coefficients [1 1 1 1] on CIFAR-10: 
 
 ```Bash
-CUDA_VISIBLE_DEVICES=0 nohup python3 robustness_eval.py --arch + ZeroSNet56_Opt --noise_type rand --noise_coff 0.1 --dataset cifar10 --opt SGD_ori --resume True --given_ks 1 1 1 1 --save_path <your save path> --workers 4
+CUDA_VISIBLE_DEVICES=0 nohup python3 robustness_eval.py --arch + ZeroSNet56_Opt --noise_type rand --noise_coff 0.1 --dataset cifar10 --resume True --given_ks 1 1 1 1 --save_path <your save path> --workers 4
 ```
 
