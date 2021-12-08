@@ -1,5 +1,8 @@
 # Zero Stability Well Predicts Performance of Convolutional Neural Networks
 
+Official Pytorch implementation of paper "Zero Stability Well Predicts Performance of Convolutional Neural Networks"
+
+
 ### Run ZeroSNet44_Opt on CIFAR-10 like this: 
 
 ```Bash
