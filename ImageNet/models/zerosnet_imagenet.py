@@ -363,7 +363,9 @@ class zerosnet_in(nn.Module):
         self.k_ini = k_ini
         self.share_k = share_k
         self.given_coe = given_coe
-        self.stepsize = 1
+        self.stepsize = 0.1
+        # self.stepsize = nn.Parameter(torch.Tensor(1).uniform_(1, 1))
+
         self.ks = []
         self.l = 0
 
