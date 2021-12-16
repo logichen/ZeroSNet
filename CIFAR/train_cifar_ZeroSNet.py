@@ -106,7 +106,7 @@ hyper_params = {
     'given_coe': args.given_coe,
     'notes': args.notes
     }
-experiment.log_parameters(hyper_params)
+# experiment.log_parameters(hyper_params)
 
 
 def train(epoch):
