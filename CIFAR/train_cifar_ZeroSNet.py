@@ -89,23 +89,23 @@ if args.checkpoint is None:
     args.checkpoint = args.save_path+'checkpoint.pth.tar'
     print('args.checkpoint', args.checkpoint)
 
-hyper_params = {
-    'epoch': args.epoch,
-    "learning_rate": args.lr,
-    'warmup': args.warm,
-    'dataset': args.dataset,
-    'arch': args.arch,
-    "batch_size": args.bs, 
-    'momentum': args.momentum,
-    'wd': args.weight_decay,
-    'opt': args.opt,
-    'PL': args.PL,
-    'sche': args.sche,
-    'coe_ini': args.coe_ini,
-    'share_coe': args.share_coe,
-    'given_coe': args.given_coe,
-    'notes': args.notes
-    }
+# hyper_params = {
+#     'epoch': args.epoch,
+#     "learning_rate": args.lr,
+#     'warmup': args.warm,
+#     'dataset': args.dataset,
+#     'arch': args.arch,
+#     "batch_size": args.bs, 
+#     'momentum': args.momentum,
+#     'wd': args.weight_decay,
+#     'opt': args.opt,
+#     'PL': args.PL,
+#     'sche': args.sche,
+#     'coe_ini': args.coe_ini,
+#     'share_coe': args.share_coe,
+#     'given_coe': args.given_coe,
+#     'notes': args.notes
+#     }
 # experiment.log_parameters(hyper_params)
 
 
