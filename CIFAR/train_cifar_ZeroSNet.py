@@ -1,4 +1,4 @@
-from comet_ml import Experiment
+# from comet_ml import Experiment
 import numpy as np
 import torch
 import torch.nn as nn
@@ -21,11 +21,7 @@ from datetime import datetime
 import errno
 import shutil
 
-experiment = Experiment(
-    api_key="KbJPNIfbsNUoZJGJBSX4BofNZ",
-    project_name="OverThreeOrders",
-    workspace="logichen",
-)
+
 
 parser = argparse.ArgumentParser(description='ZeorSNet CIFAR')
 parser.add_argument('--lr', default=0.1, type=float, help='initial learning rate')
@@ -154,28 +150,19 @@ def train(epoch):
     writer.add_scalar('Train/Accuracy-top5', top5.avg, epoch)
     writer.add_scalar('Train/Time', batch_time.sum, epoch)
 
-    experiment.log_metric("Train/Average loss", losses.avg, step=epoch)
-    experiment.log_metric("Train/Accuracy-top1", top1.avg, step=epoch)
-    experiment.log_metric("Train/Accuracy-top5", top5.avg, step=epoch)
-    experiment.log_metric("Train/Time", batch_time.sum, step=epoch)
-
-
     if 'zerosnet' in args.arch or 'ZeroSNet' in args.arch:
         if not isinstance(stepsize, int):
             stepsize = stepsize.data.cpu().numpy()
         writer.add_scalar('stepsize', float(stepsize), epoch)
-        experiment.log_metric("stepsize", float(stepsize), step=epoch)
         if coes != -1:
             if isinstance(coes, float):
                 writer.add_scalar('coes', coes, epoch)
-                experiment.log_metric("coes", coes, step=epoch)
             else:
                 for i in range(len(coes)):
 
                     if not isinstance(coes[i], float):
                         coes[i] = float(coes[i].data.cpu().numpy())
                     writer.add_scalar('coes_' + str(i), coes[i], epoch)
-                    experiment.log_metric("coes_" + str(i), coes[i], step=epoch)
 
     return top1.avg, losses.avg, batch_time.sum
 
@@ -209,11 +196,6 @@ def test(epoch):
     writer.add_scalar('Test/Accuracy-top1', top1.avg, epoch)
     writer.add_scalar('Test/Accuracy-top5', top5.avg, epoch)
     writer.add_scalar('Test/Time', batch_time.sum, epoch)
-
-    experiment.log_metric("Test/Average loss", losses.avg, step=epoch)
-    experiment.log_metric("Test/Accuracy-top1", top1.avg, step=epoch)
-    experiment.log_metric("Test/Accuracy-top5", top5.avg, step=epoch)
-    experiment.log_metric("Test/Time", batch_time.sum, step=epoch)
 
     return top1.avg, losses.avg, batch_time.sum
 
