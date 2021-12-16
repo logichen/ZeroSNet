@@ -1,3 +1,4 @@
+from comet_ml import Experiment
 import numpy as np
 import torch
 import torch.nn as nn
@@ -19,6 +20,12 @@ from models import *
 from datetime import datetime
 import errno
 import shutil
+
+experiment = Experiment(
+    api_key="KbJPNIfbsNUoZJGJBSX4BofNZ",
+    project_name="OverThreeOrders",
+    workspace="logichen",
+)
 
 parser = argparse.ArgumentParser(description='ZeorSNet CIFAR')
 parser.add_argument('--lr', default=0.1, type=float, help='initial learning rate')
@@ -86,6 +93,25 @@ if args.checkpoint is None:
     args.checkpoint = args.save_path+'checkpoint.pth.tar'
     print('args.checkpoint', args.checkpoint)
 
+hyper_params = {
+    'epoch': args.epoch,
+    "learning_rate": args.lr,
+    'warmup': args.warm,
+    'dataset': args.dataset,
+    'arch': args.arch,
+    "batch_size": args.bs, 
+    'momentum': args.momentum,
+    'wd': args.weight_decay,
+    'opt': args.opt,
+    'PL': args.PL,
+    'sche': args.sche,
+    'coe_ini': args.coe_ini,
+    'share_coe': args.share_coe,
+    'given_coe': args.given_coe,
+    'notes': args.notes
+    }
+experiment.log_parameters(hyper_params)
+
 
 def train(epoch):
     batch_time = AverageMeter('Time', ':6.3f')
@@ -127,20 +153,29 @@ def train(epoch):
     writer.add_scalar('Train/Accuracy-top1', top1.avg, epoch)
     writer.add_scalar('Train/Accuracy-top5', top5.avg, epoch)
     writer.add_scalar('Train/Time', batch_time.sum, epoch)
+
+    experiment.log_metric("Train/Average loss", losses.avg, step=epoch)
+    experiment.log_metric("Train/Accuracy-top1", top1.avg, step=epoch)
+    experiment.log_metric("Train/Accuracy-top5", top5.avg, step=epoch)
+    experiment.log_metric("Train/Time", batch_time.sum, step=epoch)
+
+
     if 'zerosnet' in args.arch or 'ZeroSNet' in args.arch:
         if not isinstance(stepsize, int):
             stepsize = stepsize.data.cpu().numpy()
         writer.add_scalar('stepsize', float(stepsize), epoch)
-
+        experiment.log_metric("stepsize", float(stepsize), step=epoch)
         if coes != -1:
             if isinstance(coes, float):
                 writer.add_scalar('coes', coes, epoch)
+                experiment.log_metric("coes", coes, step=epoch)
             else:
                 for i in range(len(coes)):
 
                     if not isinstance(coes[i], float):
                         coes[i] = float(coes[i].data.cpu().numpy())
                     writer.add_scalar('coes_' + str(i), coes[i], epoch)
+                    experiment.log_metric("coes_" + str(i), coes[i], step=epoch)
 
     return top1.avg, losses.avg, batch_time.sum
 
@@ -174,6 +209,11 @@ def test(epoch):
     writer.add_scalar('Test/Accuracy-top1', top1.avg, epoch)
     writer.add_scalar('Test/Accuracy-top5', top5.avg, epoch)
     writer.add_scalar('Test/Time', batch_time.sum, epoch)
+
+    experiment.log_metric("Test/Average loss", losses.avg, step=epoch)
+    experiment.log_metric("Test/Accuracy-top1", top1.avg, step=epoch)
+    experiment.log_metric("Test/Accuracy-top5", top5.avg, step=epoch)
+    experiment.log_metric("Test/Time", batch_time.sum, step=epoch)
 
     return top1.avg, losses.avg, batch_time.sum
 
@@ -327,41 +367,97 @@ if __name__ == '__main__':
     if args.arch == "ZeroSNet20_Tra":
         net = ZeroSNet20_Tra(PL=args.PL, coe_ini=args.coe_ini, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet32_Tra":
-        net = ZeroSNet32_Tra(PL=args.PL, coe_ini=args.coe_ini)
+        net = ZeroSNet32_Tra(PL=args.PL, coe_ini=args.coe_ini, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet44_Tra":
-        net = ZeroSNet44_Tra(PL=args.PL, coe_ini=args.coe_ini)
+        net = ZeroSNet44_Tra(PL=args.PL, coe_ini=args.coe_ini, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet56_Tra":
-        net = ZeroSNet56_Tra(PL=args.PL, coe_ini=args.coe_ini)
+        net = ZeroSNet56_Tra(PL=args.PL, coe_ini=args.coe_ini, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet110_Tra":
-        net = ZeroSNet110_Tra(PL=args.PL, coe_ini=args.coe_ini)
+        net = ZeroSNet110_Tra(PL=args.PL, coe_ini=args.coe_ini, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet164_Tra":
-        net = ZeroSNet164_Tra(PL=args.PL, coe_ini=args.coe_ini)
+        net = ZeroSNet164_Tra(PL=args.PL, coe_ini=args.coe_ini, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet326_Tra":
-        net = ZeroSNet326_Tra(PL=args.PL, coe_ini=args.coe_ini)
+        net = ZeroSNet326_Tra(PL=args.PL, coe_ini=args.coe_ini, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet650_Tra":
-        net = ZeroSNet650_Tra(PL=args.PL, coe_ini=args.coe_ini)
+        net = ZeroSNet650_Tra(PL=args.PL, coe_ini=args.coe_ini, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet1298_Tra":
-        net = ZeroSNet1298_Tra(PL=args.PL, coe_ini=args.coe_ini)
+        net = ZeroSNet1298_Tra(PL=args.PL, coe_ini=args.coe_ini, num_classes= args.num_classes)
 
 
     elif args.arch == "ZeroSNet20_Opt":
-        net = ZeroSNet20_Opt(PL=args.PL)
+        net = ZeroSNet20_Opt(PL=args.PL, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet32_Opt":
-        net = ZeroSNet32_Opt(PL=args.PL)
+        net = ZeroSNet32_Opt(PL=args.PL, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet44_Opt":
-        net = ZeroSNet44_Opt(PL=args.PL)
+        net = ZeroSNet44_Opt(PL=args.PL, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet56_Opt":
-        net = ZeroSNet56_Opt(PL=args.PL)
+        net = ZeroSNet56_Opt(PL=args.PL, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet110_Opt":
-        net = ZeroSNet110_Opt(PL=args.PL)
+        net = ZeroSNet110_Opt(PL=args.PL, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet164_Opt":
-        net = ZeroSNet164_Opt(PL=args.PL)
+        net = ZeroSNet164_Opt(PL=args.PL, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet326_Opt":
-        net = ZeroSNet326_Opt(PL=args.PL)
+        net = ZeroSNet326_Opt(PL=args.PL, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet650_Opt":
-        net = ZeroSNet650_Opt(PL=args.PL)
+        net = ZeroSNet650_Opt(PL=args.PL, num_classes= args.num_classes)
     elif args.arch == "ZeroSNet1298_Opt":
-        net = ZeroSNet1298_Opt(PL=args.PL)
+        net = ZeroSNet1298_Opt(PL=args.PL, num_classes= args.num_classes)
+
+    elif args.arch == "MResNet20":
+        net = MResNet20(PL=args.PL)
+    elif args.arch == "MResNet32":
+        net = MResNet32(PL=args.PL)
+    elif args.arch == "MResNet44":
+        net = MResNet44(PL=args.PL)
+    elif args.arch == "MResNet56":
+        net = MResNet56(PL=args.PL)
+    elif args.arch == "MResNet110":
+        net = MResNet110(PL=args.PL)
+    elif args.arch == "MResNet164":
+        net = MResNet164(PL=args.PL)
+    elif args.arch == "MResNet326":
+        net = MResNet326(PL=args.PL)
+    elif args.arch == "MResNet650":
+        net = MResNet650(PL=args.PL)
+    elif args.arch == "MResNet1298":
+        net = MResNet1298(PL=args.PL)
+
+    elif args.arch == "MResNetSD20":
+        net = MResNetSD20()
+    elif args.arch == "MResNetSD110":
+        net = MResNetSD110()
+    elif args.arch == "MResNetC20":
+        net = MResNetC20()
+    elif args.arch == "MResNetC32":
+        net = MResNetC32()
+    elif args.arch == "MResNetC44":
+        net = MResNetC44()
+    elif args.arch == "MResNetC56":
+        net = MResNetC56()
+
+    elif args.arch == "DenseResNet20":
+        net = DenseResNet20()
+    elif args.arch == "DenseResNet110":
+        net = DenseResNet110()
+
+    elif args.arch == "ResNet_20":
+        net = ResNet_20()
+    elif args.arch == "ResNet_32":
+        net = ResNet_32()
+    elif args.arch == "ResNet_44":
+        net = ResNet_44()
+    elif args.arch == "ResNet_56":
+        net = ResNet_56()
+    elif args.arch == "ResNet_110":
+        net = ResNet_110()
+    elif args.arch == "ResNet_164":
+        net = ResNet_164()
+    elif args.arch == "ResNet_326":
+        net = ResNet_326()
+    elif args.arch == "ResNet_650":
+        net = ResNet_650()
+    elif args.arch == "ResNet_1298":
+        net = ResNet_1298()
 
     net = net.to(device)
     if device == 'cuda':
