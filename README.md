@@ -9,7 +9,7 @@ Official Pytorch implementation of paper "Zero Stability Well Predicts Performan
 ```Bash
 CUDA_VISIBLE_DEVICES=0 python train_cifar_ZeroSNet.py --arch ZeroSNet44_Opt --dataset cifar10
 ```
-### Train a third-order-discretization CNN with coefficients [1, 1, 1, 1] on CIFAR-10 (Note that these coefficients lead to non-zero stability): 
+### Train a third-order-discretization CNN with coefficients [1, 1, 1, 1] on CIFAR-10 (Note that these coefficients lead to a non-zero-stable CNN): 
 
 ```Bash
 CUDA_VISIBLE_DEVICES=0 python train_cifar_ZeroSNet.py --arch ZeroSNet44_Opt --dataset cifar10 --given_coe 1 1 1 1
